@@ -1,0 +1,9 @@
+{
+    "name": "sillsdev/web-php-utilties",
+    "description": "PHP utilties for file operations and code protection.",
+    "autoload": {
+        "psr-4": {
+            "Palaso\\Utilities\\": "src/"
+        }
+    }
+}
