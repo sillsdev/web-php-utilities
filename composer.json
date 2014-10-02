@@ -1,5 +1,5 @@
 {
-    "name": "sillsdev/web-php-utilties",
+    "name": "sillsdev/web-php-utilities",
     "description": "PHP utilties for file operations and code protection.",
     "autoload": {
         "psr-4": {
