@@ -4,6 +4,18 @@ namespace Palaso\Utilities;
 class FileUtilities
 {
     /**
+     * Creates all the necessary folders in the path
+     *
+     * @param string $folderPath
+     */
+    public static function createAllFolders($folderPath) {
+        if (! file_exists($folderPath) and ! is_dir($folderPath)) {
+            mkdir($folderPath, 0777, true);
+        }
+    }
+
+    /**
+     * Removes the entire tree of files and folders including the specified folder and below
      *
      * @param string $folderPath
      */
