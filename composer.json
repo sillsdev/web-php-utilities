@@ -1,6 +1,9 @@
 {
     "name": "sillsdev/web-php-utilities",
     "description": "PHP utilties for file operations and code protection.",
+     "require-dev": {
+        "phpunit/phpunit": "~4.2.5"
+    },
     "autoload": {
         "psr-4": {
             "Palaso\\Utilities\\": "src/"

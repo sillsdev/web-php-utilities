@@ -1,0 +1,19 @@
+{
+  "name": "sillsdev_web-php-utilities",
+  "version": "0.1.0",
+  "description": "PHP utilties for file operations and code protection.",
+  "main": "",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sillsdev/web-php-utilities.git"
+  },
+  "devDependencies": {
+    "gulp": "^3.8.8",
+    "gulp-util": "^3.0.1"
+  }
+}
