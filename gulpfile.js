@@ -1,7 +1,6 @@
 var gulp = require('gulp');
 var gutil = require('gulp-util');
 var exec = require('child_process').exec;
-var async = require('async');
 
 var execute = function(command, callback) {
   gutil.log(gutil.colors.green(command));
