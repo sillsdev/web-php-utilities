@@ -21,6 +21,12 @@ gulp.task('test-php', function(cb) {
   });
 });
 
+gulp.task('test-php-coverage', function(cb) {
+  execute('/usr/bin/env php -d xdebug.show_exception_trace=0 vendor/phpunit/phpunit/phpunit --coverage-html ./test/CodeCoverage test/*_Test.php', function(err) {
+    cb(null);
+  });
+});
+
 gulp.task('test-watch', function() {
   gulp.watch(['src/**/*.php', 'test/**/*.php'], ['test-php']);
 });
