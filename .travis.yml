@@ -1,0 +1,12 @@
+language: php
+php:
+  - "5.4"
+
+before_script:
+  # install npm deps and gulp
+  - npm install -g gulp
+  - npm install
+  - composer install
+
+script:
+  - gulp test-php

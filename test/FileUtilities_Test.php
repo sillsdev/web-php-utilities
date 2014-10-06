@@ -1,10 +1,7 @@
 <?php
 use Palaso\Utilities\FileUtilities;
 
-require_once dirname(__FILE__) . '/TestConfig.php';
-require_once SimpleTestPath . 'autorun.php';
-
-class TestFileUtilities extends UnitTestCase
+class FileUtilitiesTest extends PHPUnit_Framework_TestCase
 {
 
     public function testRemoveFolderAndAllContents_NoContentExists_NoThrow()
