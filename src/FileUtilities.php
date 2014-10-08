@@ -3,12 +3,38 @@ namespace Palaso\Utilities;
 
 class FileUtilities
 {
+
+    /**
+     * Replace special characters with replacement character
+     *
+     * @param string $fileName
+     * @param string $replaceChar
+     * @return string This function returns a string with the replaced values.
+     */
+    public static function replaceSpecialCharacters($fileName, $replaceChar = '_')
+    {
+        $search = array(
+            '/',
+            '\\',
+            '?',
+            '%',
+            '*',
+            ':',
+            '|',
+            '"',
+            '<',
+            '>'
+        );
+        return str_replace($search, $replaceChar, $fileName);
+    }
+
     /**
      * Creates all the necessary folders in the path
      *
      * @param string $folderPath
      */
-    public static function createAllFolders($folderPath) {
+    public static function createAllFolders($folderPath)
+    {
         if (! file_exists($folderPath) and ! is_dir($folderPath)) {
             mkdir($folderPath, 0777, true);
         }
