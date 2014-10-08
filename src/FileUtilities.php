@@ -5,10 +5,11 @@ class FileUtilities
 {
 
     /**
-     * Replace special characters with replacement character
+     * Replace special characters with the replacement character.
+     * Special characters are any of those in Windows or Linux that cannot be used in a fileName.
      *
-     * @param string $fileName
-     * @param string $replaceChar
+     * @param string $fileName string to replace characters in
+     * @param string $replaceChar [optional] (defaults to underscore)
      * @return string This function returns a string with the replaced values.
      */
     public static function replaceSpecialCharacters($fileName, $replaceChar = '_')
