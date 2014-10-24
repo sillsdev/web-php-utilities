@@ -103,4 +103,25 @@ class FileUtilities
         }
         rmdir($newFolderPath);
     }
+
+    /**
+     * Copy a directory and all subdirectories
+     * @param string $srcPath
+     * @param string $destPath
+     */
+    public static function copyDirTree($srcPath, $destPath) {
+        FileUtilities::createAllFolders($destPath);
+        foreach (scandir($srcPath) as $fileName) {
+            if ($fileName == "." || $fileName == "..") {
+                continue;
+            }
+            $srcFile = $srcPath . "/" . $fileName;
+            $destFile = $destPath . "/" . $fileName;
+            if (is_dir($srcFile)) {
+                FileUtilities::copyDirTree($srcFile, $destFile);
+            } else {
+                copy($srcFile, $destFile);
+            }
+        }
+    }
 }

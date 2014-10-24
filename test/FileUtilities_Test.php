@@ -51,9 +51,12 @@ class FileUtilitiesPromoteFolderTest extends PHPUnit_Framework_TestCase
     protected $subFolderPath;
     protected $filePath;
     protected $subFolderFilePath;
+    protected $foldersToTearDown;
 
     protected function setUp()
     {
+        $this->foldersToTearDown = array();
+
         // create folder and subfolder
         $this->folderPath = sys_get_temp_dir() . '/testFolder_' . mt_rand();
         $this->subFolderPath = $this->folderPath . '/subfolder';
@@ -63,11 +66,15 @@ class FileUtilitiesPromoteFolderTest extends PHPUnit_Framework_TestCase
         $this->subFolderFilePath = $this->subFolderPath . '/subFolderTest.txt';
         file_put_contents($this->filePath, 'test file contents');
         file_put_contents($this->subFolderFilePath, 'test sub folder file contents');
+
+        $this->foldersToTearDown[] = $this->folderPath;
     }
 
     protected function tearDown()
     {
-        FileUtilities::removeFolderAndAllContents($this->folderPath);
+        foreach ($this->foldersToTearDown as $folderPath) {
+            FileUtilities::removeFolderAndAllContents($folderPath);
+        }
     }
 
     public function testPromoteDirContents_ParamDoesNotExist_NoThrow()
@@ -92,4 +99,25 @@ class FileUtilitiesPromoteFolderTest extends PHPUnit_Framework_TestCase
         $this->assertTrue(file_exists($newSubFolderFilePath) and ! is_dir($newSubFolderFilePath));
     }
 
+    public function testCopyDirTree_Works()
+    {
+        $this->assertTrue(file_exists($this->filePath) and ! is_dir($this->filePath));
+        $this->assertTrue(file_exists($this->subFolderFilePath) and ! is_dir($this->subFolderFilePath));
+
+        $destDir = sys_get_temp_dir() . "/newTestFolder";
+        $this->foldersToTearDown[] = $destDir;
+
+        FileUtilities::copyDirTree($this->folderPath, $destDir);
+
+        $this->assertTrue(file_exists($destDir) and is_dir($destDir));
+        foreach (array("test.txt", "subfolder", "subfolder/subFolderTest.txt") as $fileName) {
+            $destFile = $destDir . "/" . $fileName;
+            $this->assertTrue(file_exists($destFile));
+            if ($fileName == "subfolder") {
+                $this->assertTrue(is_dir($destFile));
+            } else {
+                $this->assertFalse(is_dir($destFile));
+            }
+        }
+    }
 }
