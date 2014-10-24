@@ -68,4 +68,39 @@ class FileUtilities
         }
         rmdir($folderPath);
     }
+
+    /**
+     * Removes a single folder and promotes all its contents "up" one folder
+     * @param string $folderPath
+     */
+    public static function promoteDirContents($folderPath)
+    {
+        $realFolderPath = realpath($folderPath);
+        if (!is_dir($realFolderPath)) {
+            return;
+        }
+        $parent = realpath($realFolderPath . "/..");
+        if (!is_dir($parent)) {
+            return;
+        }
+
+        // Rename folder to a name not found inside it before we promote its contents
+        // E.g., if folder "foo" contains a file "foo", we don't want to try "mv foo/foo ./foo", which
+        // would fail. Instead, we want to try "mv renamed_foo/foo ./foo", which should succeed.
+        $newName = "renamed";
+        do {
+            $newName = $newName . "_" . mt_rand();
+        } while (file_exists($realFolderPath . "/" . $newName) || file_exists($parent . "/" . $newName));
+        $newFolderPath = $parent . "/" . $newName;
+        rename($realFolderPath, $newFolderPath);
+
+        // Now it's safe to promote files and remove the now-empty folder
+        foreach (scandir($newFolderPath) as $filename) {
+            if ($filename == "." || $filename == "..") {
+                continue;
+            }
+            rename($newFolderPath . "/" . $filename, $parent . "/" . $filename);
+        }
+        rmdir($newFolderPath);
+    }
 }
