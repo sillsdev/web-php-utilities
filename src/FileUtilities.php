@@ -60,13 +60,17 @@ class FileUtilities
     protected static function recursiveRemoveFolder($folderPath)
     {
         foreach (glob("{$folderPath}/*") as $file) {
-            if (is_dir($file)) {
+            if (is_dir($file) && !is_link($file)) {
                 self::recursiveRemoveFolder($file);
             } else {
                 unlink($file);
             }
         }
-        rmdir($folderPath);
+        if (is_dir($folderPath) && !is_link($folderPath)) {
+            rmdir($folderPath);
+        } else {
+            unlink($folderPath);
+        }
     }
 
     /**
