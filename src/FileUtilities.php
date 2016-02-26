@@ -75,15 +75,25 @@ class FileUtilities
 
     /**
      * Removes a single folder and promotes all its contents "up" one folder
+     * @deprecated in favour of rename method
      * @param string $folderPath
      */
     public static function promoteDirContents($folderPath)
+    {
+        self::promoteFolderContents($folderPath);
+    }
+
+    /**
+     * Removes a single folder and promotes all its contents "up" one folder
+     * @param string $folderPath
+     */
+    public static function promoteFolderContents($folderPath)
     {
         $realFolderPath = realpath($folderPath);
         if (!is_dir($realFolderPath)) {
             return;
         }
-        $parent = realpath($realFolderPath . "/..");
+        $parent = realpath($realFolderPath . DIRECTORY_SEPARATOR . '..');
         if (!is_dir($parent)) {
             return;
         }
@@ -91,40 +101,50 @@ class FileUtilities
         // Rename folder to a name not found inside it before we promote its contents
         // E.g., if folder "foo" contains a file "foo", we don't want to try "mv foo/foo ./foo", which
         // would fail. Instead, we want to try "mv renamed_foo/foo ./foo", which should succeed.
-        $newName = "renamed";
+        $newName = 'renamed';
         do {
-            $newName = $newName . "_" . mt_rand();
-        } while (file_exists($realFolderPath . "/" . $newName) || file_exists($parent . "/" . $newName));
-        $newFolderPath = $parent . "/" . $newName;
+            $newName = $newName . '_' . mt_rand();
+        } while (file_exists($realFolderPath . DIRECTORY_SEPARATOR . $newName) || file_exists($parent . DIRECTORY_SEPARATOR . $newName));
+        $newFolderPath = $parent . DIRECTORY_SEPARATOR . $newName;
         rename($realFolderPath, $newFolderPath);
 
         // Now it's safe to promote files and remove the now-empty folder
         foreach (scandir($newFolderPath) as $filename) {
-            if ($filename == "." || $filename == "..") {
+            if ($filename == '.' || $filename == '..') {
                 continue;
             }
-            rename($newFolderPath . "/" . $filename, $parent . "/" . $filename);
+            rename($newFolderPath . DIRECTORY_SEPARATOR . $filename, $parent . DIRECTORY_SEPARATOR . $filename);
         }
         rmdir($newFolderPath);
     }
 
     /**
      * Copy a directory and all subdirectories
-     * @param string $srcPath
-     * @param string $destPath
+     * @deprecated in favour of rename method
+     * @param string $sourcePath
+     * @param string $destinationPath
      */
-    public static function copyDirTree($srcPath, $destPath) {
-        FileUtilities::createAllFolders($destPath);
-        foreach (scandir($srcPath) as $fileName) {
-            if ($fileName == "." || $fileName == "..") {
+    public static function copyDirTree($sourcePath, $destinationPath) {
+        self::copyFolderTree($sourcePath, $destinationPath);
+    }
+
+    /**
+     * Copy a folder and all sub-folders
+     * @param string $sourcePath
+     * @param string $destinationPath
+     */
+    public static function copyFolderTree($sourcePath, $destinationPath) {
+        FileUtilities::createAllFolders($destinationPath);
+        foreach (scandir($sourcePath) as $filename) {
+            if ($filename == '.' || $filename == '..') {
                 continue;
             }
-            $srcFile = $srcPath . "/" . $fileName;
-            $destFile = $destPath . "/" . $fileName;
-            if (is_dir($srcFile)) {
-                FileUtilities::copyDirTree($srcFile, $destFile);
+            $sourceFile = $sourcePath . DIRECTORY_SEPARATOR . $filename;
+            $destinationFile = $destinationPath . DIRECTORY_SEPARATOR . $filename;
+            if (is_dir($sourceFile)) {
+                FileUtilities::copyFolderTree($sourceFile, $destinationFile);
             } else {
-                copy($srcFile, $destFile);
+                copy($sourceFile, $destinationFile);
             }
         }
     }
