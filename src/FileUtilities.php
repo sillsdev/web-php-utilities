@@ -54,16 +54,18 @@ class FileUtilities
     }
 
     /**
-     *
+     * Delete entire contents of a directory, including hidden files
      * @param string $folderPath
      */
     protected static function recursiveRemoveFolder($folderPath)
     {
-        foreach (glob("{$folderPath}/*") as $file) {
-            if (is_dir($file) && !is_link($file)) {
-                self::recursiveRemoveFolder($file);
+        $files = array_diff(scandir($folderPath), array('.', '..'));
+        foreach ($files as $file) {
+            $filePath = $folderPath . DIRECTORY_SEPARATOR . $file;
+            if (is_dir($filePath) && !is_link($filePath)) {
+                self::recursiveRemoveFolder($filePath);
             } else {
-                unlink($file);
+                unlink($filePath);
             }
         }
         if (is_dir($folderPath) && !is_link($folderPath)) {
