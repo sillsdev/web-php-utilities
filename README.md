@@ -1,6 +1,15 @@
-SIL PHP Utilities
-=================
+# SIL PHP Utilities #
 
 [![Build Status](https://travis-ci.org/sillsdev/web-php-utilities.svg?branch=master)](https://travis-ci.org/sillsdev/web-php-utilities)
 
-Currently Codeguard and a recursive file / folder deleter.
+Contains **CodeGuard** and **FileUtilities**.
+
+## PHP Unit Tests ##
+
+Unit testing uses [PHPUnit](https://phpunit.de/).
+
+````
+npm install
+composer install
+gulp test-php
+````

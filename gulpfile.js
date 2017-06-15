@@ -16,13 +16,13 @@ gulp.task('default', function() {
 });
 
 gulp.task('test-php', function(cb) {
-  execute('/usr/bin/env php -d xdebug.show_exception_trace=0 vendor/phpunit/phpunit/phpunit test/', function(err) {
+  execute('/usr/bin/env php -d xdebug.show_exception_trace=0 vendor/phpunit/phpunit/phpunit test/', function() {
     cb(null);
   });
 });
 
 gulp.task('test-php-coverage', function(cb) {
-  execute('/usr/bin/env php -d xdebug.show_exception_trace=0 vendor/phpunit/phpunit/phpunit --coverage-html ./test/CodeCoverage test/', function(err) {
+  execute('/usr/bin/env php -d xdebug.show_exception_trace=0 vendor/phpunit/phpunit/phpunit --coverage-html ./test/CodeCoverage test/', function() {
     cb(null);
   });
 });

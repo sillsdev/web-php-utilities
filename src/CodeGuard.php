@@ -109,32 +109,31 @@ class CodeGuard
     }
 
     /**
-	 *
-	 * @param string $message
-	 * @param string $code
-	 * @param \Exception $previous
-	 * @throws \Exception
-	 */
+     * @param string $message
+     * @param string $code
+     * @param \Exception $previous
+     * @throws \Exception
+     */
     public static function exception($message = null, $code = null, $previous = null)
     {
-        if (!is_null($previous)) {
-            self::printException($previous);
-            print self::getStackTrace($previous->getTrace());
+        if (ini_get('display_errors')) {
+            if (!is_null($previous)) {
+                self::printException($previous);
+                print self::getStackTrace($previous->getTrace());
+            }
+            print self::getStackTrace();
         }
-        print self::getStackTrace();
         throw new \Exception($message, $code, $previous);
     }
 
     /**
-	 *
-	 * @param \Exception $ex
-	 */
+     * @param \Exception $ex
+     */
     private static function printException($ex)
     {
         print "<pre style='font-weight:bold'>";
         print $ex->getMessage() . " in " . $ex->getFile() . " line " . $ex->getLine();
         print "</pre>";
-
     }
 
 }

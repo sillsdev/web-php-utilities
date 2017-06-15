@@ -121,16 +121,6 @@ class FileUtilities
     }
 
     /**
-     * Copy a directory and all subdirectories
-     * @deprecated in favour of rename method
-     * @param string $sourcePath
-     * @param string $destinationPath
-     */
-    public static function copyDirTree($sourcePath, $destinationPath) {
-        self::copyFolderTree($sourcePath, $destinationPath);
-    }
-
-    /**
      * Copy a folder and all sub-folders
      * @param string $sourcePath
      * @param string $destinationPath
@@ -144,7 +134,29 @@ class FileUtilities
             $sourceFile = $sourcePath . DIRECTORY_SEPARATOR . $filename;
             $destinationFile = $destinationPath . DIRECTORY_SEPARATOR . $filename;
             if (is_dir($sourceFile)) {
-                FileUtilities::copyFolderTree($sourceFile, $destinationFile);
+                self::copyFolderTree($sourceFile, $destinationFile);
+            } else {
+                copy($sourceFile, $destinationFile);
+            }
+        }
+    }
+
+    /**
+     * Copy a folder and all sub-folders and normalize file names
+     * @param string $sourcePath
+     * @param string $destinationPath
+     * @param string $form (optional, defaults to NFC)
+     */
+    public static function copyFolderTreeNormalize($sourcePath, $destinationPath, $form = \Normalizer::FORM_C) {
+        FileUtilities::createAllFolders($destinationPath);
+        foreach (scandir($sourcePath) as $filename) {
+            if ($filename == '.' || $filename == '..') {
+                continue;
+            }
+            $sourceFile = $sourcePath . DIRECTORY_SEPARATOR . $filename;
+            $destinationFile = $destinationPath . DIRECTORY_SEPARATOR . \Normalizer::normalize($filename, $form);
+            if (is_dir($sourceFile)) {
+                self::copyFolderTreeNormalize($sourceFile, $destinationFile);
             } else {
                 copy($sourceFile, $destinationFile);
             }

@@ -1,8 +1,9 @@
 <?php
 
 use Palaso\Utilities\FileUtilities;
+use PHPUnit\Framework\TestCase;
 
-class FileUtilitiesTest extends PHPUnit_Framework_TestCase
+class FileUtilitiesTest extends TestCase
 {
     public function testReplaceSpecialCharacters_AllCharsInFilename_AllCharsReplacedWithUnderscore()
     {
@@ -20,7 +21,9 @@ class FileUtilitiesTest extends PHPUnit_Framework_TestCase
 
     public function testRemoveFolderAndAllContents_NoContentExists_NoThrow()
     {
-        FileUtilities::removeFolderAndAllContents('/non/existent/folder/path');
+        $folderPath = '/non/existent/folder/path';
+        $this->assertFalse(file_exists($folderPath));
+        FileUtilities::removeFolderAndAllContents($folderPath);
     }
 
     public function testRemoveFolderAndAllContents_ContentExists_ContentRemoved()
@@ -78,7 +81,7 @@ class FileUtilitiesTest extends PHPUnit_Framework_TestCase
 
 }
 
-class FileUtilitiesPromoteFolderTest extends PHPUnit_Framework_TestCase
+class FileUtilitiesPromoteFolderTest extends TestCase
 {
     protected $folderPath;
     protected $subFolderPath;
@@ -88,7 +91,7 @@ class FileUtilitiesPromoteFolderTest extends PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->foldersToTearDown = array();
+        $this->foldersToTearDown = [];
 
         // create folder and sub-folder
         $this->folderPath = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'testFolder_' . mt_rand();
@@ -112,18 +115,23 @@ class FileUtilitiesPromoteFolderTest extends PHPUnit_Framework_TestCase
 
     public function testPromoteFolderContents_ParamDoesNotExist_NoThrow()
     {
-        FileUtilities::promoteFolderContents('/non/existent/folder/path');
+        $folderPath = '/non/existent/folder/path';
+        $this->assertFalse(file_exists($folderPath));
+        FileUtilities::promoteFolderContents($folderPath);
+        $this->assertFalse(file_exists($folderPath));
     }
 
     public function testPromoteFolderContents_ParamIsNotAFile_NoThrow()
     {
-        FileUtilities::promoteFolderContents($this->subFolderFilePath);
+        $this->assertTrue(file_exists($this->subFolderPath) && is_dir($this->subFolderPath));
+        FileUtilities::promoteFolderContents($this->subFolderPath);
+        $this->assertFalse(file_exists($this->subFolderPath));
     }
 
     public function testPromoteFolderContents_Works()
     {
         $this->assertTrue(file_exists($this->filePath) && !is_dir($this->filePath));
-        $this->assertTrue(file_exists($this->subFolderFilePath) && ! is_dir($this->subFolderFilePath));
+        $this->assertTrue(file_exists($this->subFolderFilePath) && !is_dir($this->subFolderFilePath));
         FileUtilities::promoteFolderContents($this->subFolderPath);
         $this->assertTrue(file_exists($this->filePath) && !is_dir($this->filePath));
         $this->assertFalse(file_exists($this->subFolderFilePath));
@@ -144,7 +152,31 @@ class FileUtilitiesPromoteFolderTest extends PHPUnit_Framework_TestCase
         FileUtilities::copyFolderTree($this->folderPath, $destinationPath);
 
         $this->assertTrue(file_exists($destinationPath) && is_dir($destinationPath));
-        foreach (array('test.txt', 'subFolder', 'subFolder/subFolderTest.txt') as $filename) {
+        foreach (['test.txt', 'subFolder', 'subFolder/subFolderTest.txt'] as $filename) {
+            $destinationFilePath = $destinationPath . DIRECTORY_SEPARATOR . $filename;
+            $this->assertTrue(file_exists($destinationFilePath));
+            if ($filename == 'subFolder') {
+                $this->assertTrue(is_dir($destinationFilePath));
+            } else {
+                $this->assertFalse(is_dir($destinationFilePath));
+            }
+        }
+    }
+
+    public function testCopyFolderTreeNormalize_Works()
+    {
+        $this->assertTrue(file_exists($this->filePath) && !is_dir($this->filePath));
+        $this->assertTrue(file_exists($this->subFolderFilePath) && !is_dir($this->subFolderFilePath));
+
+        $subFolderNfdFilePath = $this->subFolderPath . DIRECTORY_SEPARATOR . 'tårta.txt'; // NFD
+        file_put_contents($subFolderNfdFilePath, 'test sub folder NFD filename file contents');
+        $destinationPath = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'newTestFolder';
+        $this->foldersToTearDown[] = $destinationPath;
+
+        FileUtilities::copyFolderTreeNormalize($this->folderPath, $destinationPath);
+
+        $this->assertTrue(file_exists($destinationPath) && is_dir($destinationPath));
+        foreach (['test.txt', 'subFolder', 'subFolder/tårta.txt'] as $filename) { // NFC
             $destinationFilePath = $destinationPath . DIRECTORY_SEPARATOR . $filename;
             $this->assertTrue(file_exists($destinationFilePath));
             if ($filename == 'subFolder') {
