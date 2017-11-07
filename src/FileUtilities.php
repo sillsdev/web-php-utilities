@@ -33,12 +33,18 @@ class FileUtilities
      * Creates all the necessary folders in the path
      *
      * @param string $folderPath
+     * @throws \ErrorException
      */
     public static function createAllFolders($folderPath)
     {
+        set_error_handler(function($errno, $errstr, $errfile, $errline, array $errcontext) use ($folderPath) {
+            $msg = "Error in createAllFolders($folderPath) : " . $errstr;
+            throw new \ErrorException($msg, 0, $errno, $errfile, $errline);
+        });
         if (! file_exists($folderPath) and ! is_dir($folderPath)) {
             mkdir($folderPath, 0777, true);
         }
+        restore_error_handler();
     }
 
     /**
