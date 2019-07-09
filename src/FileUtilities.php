@@ -38,7 +38,21 @@ class FileUtilities
     public static function createAllFolders($folderPath)
     {
         set_error_handler(function($errno, $errstr, $errfile, $errline, array $errcontext) use ($folderPath) {
-            $msg = "Error in createAllFolders($folderPath) : " . $errstr;
+            $dirName = self::findPathThatExists($folderPath);
+            
+            $perms = decoct(fileperms($dirName) & 0777);
+            $owner = posix_getpwuid(fileowner($dirName))['name'];
+            $group = posix_getgrgid(filegroup($dirName))['name'];
+            $user = posix_getpwuid(posix_geteuid())['name'];
+
+            $msg = "Error in createAllFolders($folderPath)\n"
+            . $errstr ."\n"
+            . "Parent folder: $dirName\n"
+            . "Owner of parent folder: $owner\n"
+            . "Group of parent folder: $group\n"
+            . "Permissions on parent folder: $perms\n"
+            . "PHP running as user: $user\n";
+
             throw new \ErrorException($msg, 0, $errno, $errfile, $errline);
         });
         if (! file_exists($folderPath) and ! is_dir($folderPath)) {
@@ -167,5 +181,20 @@ class FileUtilities
                 copy($sourceFile, $destinationFile);
             }
         }
+    }
+
+    /**
+     * Gets the part of a path that exists
+     * @oaram string $input theoretical path
+     * @return string part of $input that currently exists
+     */
+    public static function findPathThatExists($input) {
+        while ($input != '/') {
+            if (file_exists($input)) {
+                return $input;
+            }
+            $input = dirname($input);
+        }
+        return '';
     }
 }
