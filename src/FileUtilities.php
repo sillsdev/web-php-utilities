@@ -44,6 +44,7 @@ class FileUtilities
             $owner = posix_getpwuid(fileowner($dirName))['name'];
             $group = posix_getgrgid(filegroup($dirName))['name'];
             $user = posix_getpwuid(posix_geteuid())['name'];
+            $definedVars = get_defined_vars();
 
             $msg = "Error in createAllFolders($folderPath)\n"
             . $errstr ."\n"
@@ -51,7 +52,8 @@ class FileUtilities
             . "Owner of parent folder: $owner\n"
             . "Group of parent folder: $group\n"
             . "Permissions on parent folder: $perms\n"
-            . "PHP running as user: $user\n";
+            . "PHP running as user: $user\n"
+            . "dumping all vars: $definedVars\n";
 
             throw new \ErrorException($msg, 0, $errno, $errfile, $errline);
         });
